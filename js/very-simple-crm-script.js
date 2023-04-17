@@ -5,15 +5,13 @@ jQuery(document).ready(function($) {
 
         var form = $(this);
         var dataPosts = {
-            'action' : 'customer_submission_ajax_handler',
-            'customer_name'   : $('#very-simple-crm input[name="customer_name"]').val(),
+            'action'           : 'customer_submission_ajax_handler',
+            'customer_name'    : $('#very-simple-crm input[name="customer_name"]').val(),
             'customer_phone'   : $('#very-simple-crm input[name="customer_phone"]').val(),
             'customer_email'   : $('#very-simple-crm input[name="customer_email"]').val(),
-            'customer_budget'   : $('#very-simple-crm input[name="customer_budget"]').val(),
-            'customer_message'   : $('#very-simple-crm textarea#customer_message').val()
+            'customer_budget'  : $('#very-simple-crm input[name="customer_budget"]').val(),
+            'customer_message' : $('#very-simple-crm textarea#customer_message').val()
         };
-
-        console.log(dataPosts);
 
         $.ajax({
             url : very_simple_crm_params.ajaxurl,
@@ -21,9 +19,8 @@ jQuery(document).ready(function($) {
             dataType: "text",
             type : 'POST',
             success : function(data){
-                //var json = $.parseJSON(data);
                 form.find('.customer-success').remove();
-                form.append('Thank you.');
+                form.append('<p class="customer-success">Thank you for your submission!</p>');
                 form[0].reset();
             }
         });

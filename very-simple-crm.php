@@ -137,7 +137,6 @@ function very_simple_crm_register_customer_post_type() {
 }
 add_action( 'init', 'very_simple_crm_register_customer_post_type' );
 
-
 // Register simple crm admin menu page for customer submissions.
 function very_simple_crm_register_admin_menu() {
     add_menu_page (
