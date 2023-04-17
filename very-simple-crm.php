@@ -35,18 +35,18 @@ function customer_submission_form_shortcode( $atts ) {
     ob_start();
 
     $atts = shortcode_atts( array(
-        'name_label'          => 'Name:',           // Default label for name field
-        'phone_label'         => 'Phone Number:',   // Default label for phone field
-        'email_label'         => 'Email Address:',  // Default label for email field
-        'budget_label'        => 'Desired Budget:', // Default label for budget field
-        'message_label'       => 'Message:',        // Default label for message field
-        'name_max_length'     => '40',              // Default max length for name field
-        'phone_max_length'    => '12',              // Default max length for phone field
-        'email_max_length'    => '30',              // Default max length for email field
-        'budget_max_length'   => '10',              // Default max length for budget field
-        'message_max_length'  => '360',             // Default max length for message field
-        'message_rows_length' => '10',              // Default max rows for message field
-        'message_cols_length' => '20',              // Default max cols for message field
+        'name_label'          => 'Name:',           // Default label for name field.
+        'phone_label'         => 'Phone Number:',   // Default label for phone field.
+        'email_label'         => 'Email Address:',  // Default label for email field.
+        'budget_label'        => 'Desired Budget:', // Default label for budget field.
+        'message_label'       => 'Message:',        // Default label for message field.
+        'name_max_length'     => '40',              // Default max length for name field.
+        'phone_max_length'    => '12',              // Default max length for phone field.
+        'email_max_length'    => '30',              // Default max length for email field.
+        'budget_max_length'   => '10',              // Default max length for budget field.
+        'message_max_length'  => '360',             // Default max length for message field.
+        'message_rows_length' => '10',              // Default max rows for message field.
+        'message_cols_length' => '20',              // Default max cols for message field.
     ), $atts );
 
 
@@ -160,12 +160,13 @@ add_action( 'init', 'very_simple_crm_register_customer_post_type' );
  */
 function very_simple_crm_register_admin_menu() {
     add_menu_page (
-        'Customers',
-        'Customers',
-        'manage_options',
-        'very_simple_crm_admin_page',
-        'dashicons-businessman',
-        25,
+        'Customer Submissions', // Page title
+        'Customer Submissions', // Menu title
+        'manage_options', // Capability required to access the menu page
+        'custom_crm_admin_page', // Menu slug
+        'custom_crm_render_admin_page', // Callback function to render the menu page
+        'dashicons-businessman', // Icon for the menu page
+        25 // Position of the menu page in the admin menu
     );
 }
 add_action( 'admin_menu', 'very_simple_crm_register_admin_menu' );
