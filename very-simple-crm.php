@@ -160,11 +160,11 @@ add_action( 'init', 'very_simple_crm_register_customer_post_type' );
  */
 function very_simple_crm_register_admin_menu() {
     add_menu_page (
-        'Customer Submissions', // Page title
-        'Customer Submissions', // Menu title
+        'Customer List', // Page title
+        'Customer List', // Menu title
         'manage_options', // Capability required to access the menu page
-        'custom_crm_admin_page', // Menu slug
-        'custom_crm_render_admin_page', // Callback function to render the menu page
+        'very_simple_crm_admin_page', // Menu slug
+        'very_simple_crm_render_admin_page', // Callback function to render the menu page
         'dashicons-businessman', // Icon for the menu page
         25 // Position of the menu page in the admin menu
     );
