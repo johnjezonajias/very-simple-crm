@@ -9,7 +9,11 @@ Author: John Jezon Ajias
 // Exit if accessed directly.
 if( ! defined( 'ABSPATH' ) ) exit;
 
-// Enqueue custom CSS styles.
+/**
+ * Enqueue custom CSS styles.
+ *
+ * @return void
+ */
 function enqueue_very_simple_crm_styles() {
     wp_enqueue_script( 'very-simple-crm', plugin_dir_url( __FILE__ ) . 'js/very-simple-crm-script.js', array( 'jquery' ), '1.0', true );
     wp_localize_script( 'very-simple-crm', 'very_simple_crm_params', array(
@@ -21,8 +25,12 @@ function enqueue_very_simple_crm_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_very_simple_crm_styles' );
 
-
-// Form fields markup.
+/**
+ * Form fields markup.
+ *
+ * @param  mixed $atts
+ * @return void
+ */
 function customer_submission_form_shortcode( $atts ) {
     ob_start();
 
@@ -65,7 +73,11 @@ function customer_submission_form_shortcode( $atts ) {
 }
 add_shortcode( 'customer_form', 'customer_submission_form_shortcode' );
 
-// AJAX handler to save form data.
+/**
+ * AJAX handler to save form data.
+ *
+ * @return void
+ */
 function customer_submission_ajax_handler() {
     // Retrieve form data
     $customer_name    = sanitize_text_field( $_POST[ 'customer_name' ] );
@@ -99,7 +111,11 @@ function customer_submission_ajax_handler() {
 add_action( 'wp_ajax_customer_submission_ajax_handler', 'customer_submission_ajax_handler' );
 add_action( 'wp_ajax_nopriv_customer_submission_ajax_handler', 'customer_submission_ajax_handler' );
 
-// Register 'customer' custom post type.
+/**
+ * Register 'customer' custom post type.
+ *
+ * @return void
+ */
 function very_simple_crm_register_customer_post_type() {
     $labels = array(
         'name'                => esc_html( 'Customers', 'very-simple-crm'),
@@ -137,7 +153,11 @@ function very_simple_crm_register_customer_post_type() {
 }
 add_action( 'init', 'very_simple_crm_register_customer_post_type' );
 
-// Register simple crm admin menu page for customer submissions.
+/**
+ * Register simple crm admin menu page for customer submissions.
+ *
+ * @return void
+ */
 function very_simple_crm_register_admin_menu() {
     add_menu_page (
         'Customers',
