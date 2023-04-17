@@ -27,17 +27,14 @@ function customer_submission_form_shortcode( $atts ) {
         'message_cols_length' => '20', // Default max cols for message field
     ), $atts );
 
-    // Generate nonce field
-    //$nonce = wp_create_nonce( 'customer_submission_nonce' );
 
     // Display the form
     echo '<div id="very-simple-crm">';
     echo '<form id="very-simple-crm-form" action="' . admin_url( 'admin-ajax.php' ) . '">';
 
     wp_nonce_field( 'customer_submission', 'customer_submission_nonce' );
-    
-    echo '<input type="hidden" name="action" value="customer_submission">'; // Add hidden input for action
 
+    echo '<input type="hidden" name="action" value="customer_submission">';
     echo '<label for="customer_name">'. esc_html( $atts['name_label' ] ) .'</label>';
     echo '<input type="text" name="customer_name" id="customer_name" maxlength="'. esc_attr( $atts[ 'name_max_length' ] ) .'" required>';
     echo '<label for="customer_phone">'. esc_html( $atts['phone_label' ] ) .'</label>';
@@ -161,4 +158,3 @@ function very_simple_crm_register_admin_menu() {
     );
 }
 add_action( 'admin_menu', 'very_simple_crm_register_admin_menu' );
-
