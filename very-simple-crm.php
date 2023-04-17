@@ -45,7 +45,7 @@ function customer_submission_form_shortcode( $atts ) {
 
     // Display the form
     echo '<div id="very-simple-crm">';
-    echo '<form id="very-simple-crm-form" action="' . admin_url( 'admin-ajax.php' ) . '">';
+    echo '<form id="very-simple-crm-form" action="'. admin_url( 'admin-ajax.php' ) .'">';
     wp_nonce_field( 'customer_submission', 'customer_submission_nonce' );
     echo '<input type="hidden" name="action" value="customer_submission">';
     echo '<label for="customer_name">'. esc_html( $atts['name_label' ] ) .'</label>';
@@ -70,12 +70,12 @@ add_shortcode( 'customer_form', 'customer_submission_form_shortcode' );
 // AJAX handler to save form data
 function customer_submission_ajax_handler() {
     // Verify nonce
-    if ( ! wp_verify_nonce( $_POST['customer_submission'], 'customer_submission_nonce' ) ) {
-        wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
-    }
+    //if ( ! wp_verify_nonce( $_POST['customer_submission_nonce'], 'customer_submission_nonce' ) ) {
+        //wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
+    //}
 
     // Retrieve form data
-    $customer_name    = sanitize_text_field( $_POST['customer_name'] );
+    /*$customer_name    = sanitize_text_field( $_POST['customer_name'] );
     $customer_phone   = sanitize_text_field( $_POST['customer_phone'] );
     $customer_email   = sanitize_email( $_POST['customer_email'] );
     $customer_budget  = sanitize_text_field( $_POST['customer_budget'] );
@@ -101,7 +101,29 @@ function customer_submission_ajax_handler() {
         wp_send_json_success( array( 'message' => 'Customer data saved successfully.' ) );
     } else {
         wp_send_json_error( array( 'message' => 'Failed to save customer data.' ) );
+    }*/
+
+    ob_start();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['customer_submit'])) {
+        $customer_data = array(
+            'post_title' => sanitize_text_field($_POST['customer_name']),
+            'post_content' => sanitize_textarea_field($_POST['customer_message']),
+            'post_type' => 'customer',
+            'post_status' => 'private',
+        );
+        $customer_id = wp_insert_post($customer_data);
+
+        // Save additional data as custom fields
+        update_post_meta($customer_id, 'phone', sanitize_text_field($_POST['customer_phone']));
+        update_post_meta($customer_id, 'email', sanitize_email($_POST['customer_email']));
+        update_post_meta($customer_id, 'budget', sanitize_text_field($_POST['customer_budget']));
+
+        // Display success message
+        echo '<p class="customer-success">Thank you for your submission!</p>';
     }
+
+    ob_get_clean();
 }
 add_action( 'wp_ajax_customer_submission', 'customer_submission_ajax_handler' );
 add_action( 'wp_ajax_nopriv_customer_submission', 'customer_submission_ajax_handler' );
@@ -152,7 +174,7 @@ function very_simple_crm_register_admin_menu() {
         'Customers',
         'manage_options',
         'very_simple_crm_admin_page',
-        'very_simple_crm_render_admin_page',
+        //'very_simple_crm_render_admin_page',
         'dashicons-businessman',
         25,
     );
