@@ -22,14 +22,20 @@ jQuery(document).ready(function($) {
         });*/
 
         var form = $(this);
-        var formData = form.serialize();
         var dataPosts = {
-            'action' : 'customer_submission_ajax_handler'
+            'action' : 'customer_submission_ajax_handler',
+            'name'   : $('#very-simple-crm input[name="customer_name"]').val(),
+            'phone'   : $('#very-simple-crm input[name="customer_phone"]').val(),
+            'email'   : $('#very-simple-crm input[name="customer_email"]').val(),
+            'budget'   : $('#very-simple-crm input[name="customer_budget"]').val(),
+            'message'   : $('#very-simple-crm textarea#customer_message').val()
         };
+
+        console.log(dataPosts);
 
         $.ajax({
             url : very_simple_crm_params.ajaxurl,
-            data : dataPosts,
+            data : formDdataPostsata,
             dataType: "text",
             type : 'POST',
             success : function(data){
