@@ -1,28 +1,28 @@
 <?php
 /*
 Plugin Name: Very Simple CRM
-Description: A very simpkle Customer Relationship Management wordpress plugin.
+Description: A very simple Customer Relationship Management wordpress plugin.
 Version: 1.0
 Author: John Jezon Ajias
 */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if( ! defined( 'ABSPATH' ) ) exit;
 
-// Enqueue custom CSS styles
+// Enqueue custom CSS styles.
 function enqueue_very_simple_crm_styles() {
     wp_enqueue_script( 'very-simple-crm', plugin_dir_url( __FILE__ ) . 'js/very-simple-crm-script.js', array( 'jquery' ), '1.0', true );
     wp_localize_script( 'very-simple-crm', 'very_simple_crm_params', array(
         'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php', // This is the URL for admin-ajax.php
     ) );
 
-    // Register styles
+    // Register styles.
     wp_enqueue_style( 'very-simple-crm-styles', plugins_url( 'css/very-simple-crm-styles.css', __FILE__ ) );
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_very_simple_crm_styles' );
 
 
-// Form fields markup
+// Form fields markup.
 function customer_submission_form_shortcode( $atts ) {
     ob_start();
 
@@ -34,7 +34,7 @@ function customer_submission_form_shortcode( $atts ) {
         'message_label'       => 'Message:',        // Default label for message field
         'name_max_length'     => '40',              // Default max length for name field
         'phone_max_length'    => '12',              // Default max length for phone field
-        'email_max_length'    => '30',              // Default max length for emai field
+        'email_max_length'    => '30',              // Default max length for email field
         'budget_max_length'   => '10',              // Default max length for budget field
         'message_max_length'  => '360',             // Default max length for message field
         'message_rows_length' => '10',              // Default max rows for message field
@@ -42,7 +42,7 @@ function customer_submission_form_shortcode( $atts ) {
     ), $atts );
 
 
-    // Display the form
+    // Display the form.
     echo '<div id="very-simple-crm">';
     echo '<form id="very-simple-crm-form" action="'. admin_url( 'admin-ajax.php' ) .'">';
     echo '<input type="hidden" name="action" value="customer_submission">';
@@ -65,16 +65,8 @@ function customer_submission_form_shortcode( $atts ) {
 }
 add_shortcode( 'customer_form', 'customer_submission_form_shortcode' );
 
-// AJAX handler to save form data
+// AJAX handler to save form data.
 function customer_submission_ajax_handler() {
-    // Verify nonce
-    /*if ( ! wp_verify_nonce( $_POST['customer_submission_nonce'], 'customer_submission_nonce' ) ) {
-        wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
-    }*/
-    if( !( isset( $_POST['customer_submission_nonce'] ) ) ) {
-        return;
-    }
-
     // Retrieve form data
     $customer_name    = sanitize_text_field( $_POST[ 'customer_name' ] );
     $customer_phone   = sanitize_text_field( $_POST[ 'customer_phone' ] );
@@ -82,7 +74,7 @@ function customer_submission_ajax_handler() {
     $customer_budget  = sanitize_text_field( $_POST[ 'customer_budget' ] );
     $customer_message = sanitize_textarea_field( $_POST[ 'customer_message' ] );
 
-    // Create new customer post
+    // Create new customer post.
     $customer_post = array(
         'post_title'   => $customer_name,
         'post_content' => $customer_message,
@@ -90,39 +82,39 @@ function customer_submission_ajax_handler() {
         'post_type'    => 'customer',
     );
 
-    // Insert customer post
+    // Insert customer post.
     $customer_post_id = wp_insert_post( $customer_post );
 
-    // Save additional data as custom fields
+    // Save additional data as custom fields.
     update_post_meta( $customer_post_id, 'phone', sanitize_text_field( $_POST[ 'customer_phone' ] ) );
     update_post_meta( $customer_post_id, 'email', sanitize_email( $_POST[ 'customer_email' ] ));
     update_post_meta( $customer_post_id, 'budget', sanitize_text_field( $_POST[ 'customer_budget' ] ) );
 
     if ( $customer_post_id ) {
-        wp_send_json_success( array( 'message' => 'Customer data saved successfully.' ) );
+        wp_send_json_success( array( 'message' => esc_html( 'Customer data saved successfully.', 'very-simple-crm') ) );
     } else {
-        wp_send_json_error( array( 'message' => 'Failed to save customer data.' ) );
+        wp_send_json_error( array( 'message' => esc_html( 'Failed to save customer data.', 'very-simple-crm') ) );
     }
 }
 add_action( 'wp_ajax_customer_submission_ajax_handler', 'customer_submission_ajax_handler' );
 add_action( 'wp_ajax_nopriv_customer_submission_ajax_handler', 'customer_submission_ajax_handler' );
 
-// Register 'customer' custom post type
+// Register 'customer' custom post type.
 function very_simple_crm_register_customer_post_type() {
     $labels = array(
-        'name'                => 'Customers',
-        'singular_name'       => 'Customer',
-        'add_new'             => 'Add New',
-        'add_new_item'        => 'Add New Customer',
-        'edit_item'           => 'Edit Customer',
-        'new_item'            => 'New Customer',
-        'all_items'           => 'All Customers',
-        'view_item'           => 'View Customer',
-        'search_items'        => 'Search Customers',
-        'not_found'           => 'No customers found',
-        'not_found_in_trash'  => 'No customers found in Trash',
-        'parent_item_colon'   => '',
-        'menu_name'           => 'Customers'
+        'name'                => esc_html( 'Customers', 'very-simple-crm'),
+        'singular_name'       => esc_html( 'Customer', 'very-simple-crm'),
+        'add_new'             => esc_html( 'Add New', 'very-simple-crm'),
+        'add_new_item'        => esc_html( 'Add New Customer', 'very-simple-crm'),
+        'edit_item'           => esc_html( 'Edit Customer', 'very-simple-crm'),
+        'new_item'            => esc_html( 'New Customer', 'very-simple-crm'),
+        'all_items'           => esc_html( 'All Customers', 'very-simple-crm'),
+        'view_item'           => esc_html( 'View Customer', 'very-simple-crm'),
+        'search_items'        => esc_html( 'Search Customers', 'very-simple-crm'),
+        'not_found'           => esc_html( 'No customers found', 'very-simple-crm'),
+        'not_found_in_trash'  => esc_html( 'No customers found in Trash', 'very-simple-crm'),
+        'parent_item_colon'   => esc_html( '', 'very-simple-crm'),
+        'menu_name'           => esc_html( 'Customers', 'very-simple-crm')
     );
 
     $args = array(
@@ -146,7 +138,7 @@ function very_simple_crm_register_customer_post_type() {
 add_action( 'init', 'very_simple_crm_register_customer_post_type' );
 
 
-// Register simple crm admin menu page for customer submissions
+// Register simple crm admin menu page for customer submissions.
 function very_simple_crm_register_admin_menu() {
     add_menu_page (
         'Customers',

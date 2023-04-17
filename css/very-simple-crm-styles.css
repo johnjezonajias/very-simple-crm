@@ -1,8 +1,3 @@
-#very-simple-crm {
-    display: inline-block;
-    width: 100%;
-}
-
 #very-simple-crm input[type="text"],
 #very-simple-crm input[type="email"],
 #very-simple-crm input[type="tel"],
@@ -11,7 +6,7 @@
     background-color: #fefefe;
     border: 1px solid #dedede;
     border-radius: 0;
-    display: block;
+    display: inline-block;
     font-size: 1rem;
     padding: 10px 15px;
     width: 100%;
