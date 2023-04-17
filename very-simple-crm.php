@@ -14,7 +14,6 @@ function enqueue_very_simple_crm_styles() {
     wp_enqueue_script( 'very-simple-crm', plugin_dir_url( __FILE__ ) . 'js/very-simple-crm-script.js', array( 'jquery' ), '1.0', true );
     wp_localize_script( 'very-simple-crm', 'very_simple_crm_params', array(
         'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php', // This is the URL for admin-ajax.php
-        'nonce'   => wp_create_nonce( 'customer_submission_nonce' )
     ) );
 
     // Register styles
@@ -46,7 +45,6 @@ function customer_submission_form_shortcode( $atts ) {
     // Display the form
     echo '<div id="very-simple-crm">';
     echo '<form id="very-simple-crm-form" action="'. admin_url( 'admin-ajax.php' ) .'">';
-    wp_nonce_field( 'customer_submission', 'customer_submission_nonce' );
     echo '<input type="hidden" name="action" value="customer_submission">';
     echo '<label for="customer_name">'. esc_html( $atts['name_label' ] ) .'</label>';
     echo '<input type="text" name="customer_name" id="customer_name" maxlength="'. esc_attr( $atts[ 'name_max_length' ] ) .'" required>';
@@ -73,29 +71,32 @@ function customer_submission_ajax_handler() {
     /*if ( ! wp_verify_nonce( $_POST['customer_submission_nonce'], 'customer_submission_nonce' ) ) {
         wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
     }*/
+    if( !( isset( $_POST['customer_submission_nonce'] ) ) ) {
+        return;
+    }
 
     // Retrieve form data
-    $customer_name    = sanitize_text_field( $_POST['customer_name'] );
-    $customer_phone   = sanitize_text_field( $_POST['customer_phone'] );
-    $customer_email   = sanitize_email( $_POST['customer_email'] );
-    $customer_budget  = sanitize_text_field( $_POST['customer_budget'] );
-    $customer_message = sanitize_textarea_field( $_POST['customer_message'] );
+    $customer_name    = sanitize_text_field( $_POST[ 'customer_name' ] );
+    $customer_phone   = sanitize_text_field( $_POST[ 'customer_phone' ] );
+    $customer_email   = sanitize_email( $_POST[ 'customer_email' ] );
+    $customer_budget  = sanitize_text_field( $_POST[ 'customer_budget' ] );
+    $customer_message = sanitize_textarea_field( $_POST[ 'customer_message' ] );
 
     // Create new customer post
     $customer_post = array(
         'post_title'   => $customer_name,
         'post_content' => $customer_message,
-        'post_status'  => 'publish',
+        'post_status'  => 'private',
         'post_type'    => 'customer',
-        'meta_input'   => array(
-            '_customer_phone'   => $customer_phone,
-            '_customer_email'   => $customer_email,
-            '_customer_budget'  => $customer_budget
-        )
     );
 
     // Insert customer post
     $customer_post_id = wp_insert_post( $customer_post );
+
+    // Save additional data as custom fields
+    update_post_meta( $customer_post_id, 'phone', sanitize_text_field( $_POST[ 'customer_phone' ] ) );
+    update_post_meta( $customer_post_id, 'email', sanitize_email( $_POST[ 'customer_email' ] ));
+    update_post_meta( $customer_post_id, 'budget', sanitize_text_field( $_POST[ 'customer_budget' ] ) );
 
     if ( $customer_post_id ) {
         wp_send_json_success( array( 'message' => 'Customer data saved successfully.' ) );
@@ -152,7 +153,6 @@ function very_simple_crm_register_admin_menu() {
         'Customers',
         'manage_options',
         'very_simple_crm_admin_page',
-        //'very_simple_crm_render_admin_page',
         'dashicons-businessman',
         25,
     );
