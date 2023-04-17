@@ -4,17 +4,27 @@ jQuery(document).ready(function($) {
         event.preventDefault();
 
         var form = $(this);
-        var formData = form.serialize();
+        var name = $('input#customer_name').val();
+        var email = $('input#customer_email').val();
 
         $.ajax({
-            url: form.attr('action'),
+            url: crm.ajaxurl,
             type: 'post',
-            data: formData,
+            data: {
+                action: 'customer_submission',
+                name: name,
+                email: email,
+            },
             success: function(response) {
                 // Update DOM with success message
                 form.find('.customer-success').remove();
-                form.append('<p class="customer-success">Thank you for your submission!</p>');
+                form.append('<p class="customer-success">Thank you for your submission.</p>');
                 form[0].reset();
+            },
+            error: function(response) {
+                // Handle error
+                console.error('Error:', response.responseText);
+                // Update UI, show error message, etc.
             }
         });
     });

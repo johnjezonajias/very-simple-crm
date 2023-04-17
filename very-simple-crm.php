@@ -9,31 +9,44 @@ Author: John Jezon Ajias
 // Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
 
+// Enqueue custom CSS styles
+function enqueue_very_simple_crm_styles() {
+    wp_enqueue_script( 'very-simple-crm', plugin_dir_url( __FILE__ ) . 'js/very-simple-crm-script.js', array( 'jquery' ), '1.0', true );
+    wp_localize_script( 'very-simple-crm', 'crm', array(
+        'ajaxurl' => admin_url( 'admin-ajax.php' ), // This is the URL for admin-ajax.php
+        'nonce'   => wp_create_nonce( 'customer_submission_nonce' )
+    ) );
+
+    // Register styles
+    wp_enqueue_style( 'very-simple-crm-styles', plugins_url( 'css/very-simple-crm-styles.css', __FILE__ ) );
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_very_simple_crm_styles' );
+
+
+// Form fields markup
 function customer_submission_form_shortcode( $atts ) {
     ob_start();
 
     $atts = shortcode_atts( array(
-        'name_label'          => 'Name:', // Default label for name field
-        'phone_label'         => 'Phone Number:', // Default label for phone field
-        'email_label'         => 'Email Address:', // Default label for email field
+        'name_label'          => 'Name:',           // Default label for name field
+        'phone_label'         => 'Phone Number:',   // Default label for phone field
+        'email_label'         => 'Email Address:',  // Default label for email field
         'budget_label'        => 'Desired Budget:', // Default label for budget field
-        'message_label'       => 'Message:', // Default label for message field
-        'name_max_length'     => '40', // Default max length for name field
-        'phone_max_length'    => '12', // Default max length for phone field
-        'email_max_length'    => '30', // Default max length for emai field
-        'budget_max_length'   => '10', // Default max length for budget field
-        'message_max_length'  => '360', // Default max length for message field
-        'message_rows_length' => '10', // Default max rows for message field
-        'message_cols_length' => '20', // Default max cols for message field
+        'message_label'       => 'Message:',        // Default label for message field
+        'name_max_length'     => '40',              // Default max length for name field
+        'phone_max_length'    => '12',              // Default max length for phone field
+        'email_max_length'    => '30',              // Default max length for emai field
+        'budget_max_length'   => '10',              // Default max length for budget field
+        'message_max_length'  => '360',             // Default max length for message field
+        'message_rows_length' => '10',              // Default max rows for message field
+        'message_cols_length' => '20',              // Default max cols for message field
     ), $atts );
 
 
     // Display the form
     echo '<div id="very-simple-crm">';
     echo '<form id="very-simple-crm-form" action="' . admin_url( 'admin-ajax.php' ) . '">';
-
     wp_nonce_field( 'customer_submission', 'customer_submission_nonce' );
-
     echo '<input type="hidden" name="action" value="customer_submission">';
     echo '<label for="customer_name">'. esc_html( $atts['name_label' ] ) .'</label>';
     echo '<input type="text" name="customer_name" id="customer_name" maxlength="'. esc_attr( $atts[ 'name_max_length' ] ) .'" required>';
@@ -54,23 +67,10 @@ function customer_submission_form_shortcode( $atts ) {
 }
 add_shortcode( 'customer_form', 'customer_submission_form_shortcode' );
 
-// Enqueue custom CSS styles
-function enqueue_very_simple_crm_styles() {
-    wp_enqueue_script( 'very-simple-crm', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), '1.0', true );
-    wp_localize_script( 'very-simple-crm', 'verySimpleCRM', array(
-        'ajaxurl' => admin_url( 'admin-ajax.php' ),
-        'nonce'   => wp_create_nonce( 'customer_submission_nonce' )
-    ) );
-
-    // Register styles
-    wp_enqueue_style( 'very-simple-crm-styles', plugins_url( 'css/very-simple-crm-styles.css', __FILE__ ) );
-}
-add_action( 'wp_enqueue_scripts', 'enqueue_very_simple_crm_styles' );
-
 // AJAX handler to save form data
 function customer_submission_ajax_handler() {
     // Verify nonce
-    if ( ! wp_verify_nonce( $_POST['nonce'], 'customer_submission_nonce' ) ) {
+    if ( ! wp_verify_nonce( $_POST['customer_submission'], 'customer_submission_nonce' ) ) {
         wp_send_json_error( array( 'message' => 'Nonce verification failed.' ) );
     }
 
