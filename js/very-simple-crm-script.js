@@ -35,7 +35,7 @@ jQuery(document).ready(function($) {
 
         $.ajax({
             url : very_simple_crm_params.ajaxurl,
-            data : formDdataPostsata,
+            data : dataPosts,
             dataType: "text",
             type : 'POST',
             success : function(data){
